@@ -29,7 +29,7 @@ pub fn main() !void {
 
     printDirContents(path, filename) catch |err| switch (err) {
         error.FileNotFound => {
-            std.debug.print("Couldn't find directory {s}\n", .{path});
+            std.debug.print("sf: Couldn't find directory: {s}\n", .{path});
             std.process.exit(1);
         },
 
