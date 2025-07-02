@@ -28,7 +28,8 @@ pub fn main() !void {
         },
     }
 
-    printDirContents(path, filename) catch |err| switch (err) {
+    const stdout = std.io.getStdOut().writer();
+    printDirContents(path, filename, stdout) catch |err| switch (err) {
         error.FileNotFound => {
             std.debug.print("sf: Couldn't find directory: {s}\n", .{path});
             std.process.exit(1);
@@ -38,7 +39,7 @@ pub fn main() !void {
     };
 }
 
-pub fn printDirContents(path: []const u8, needle: []const u8) !void {
+pub fn printDirContents(path: []const u8, needle: []const u8, stdout: std.fs.File.Writer) !void {
     var dir = try std.fs.cwd().openDir(path, .{ .iterate = true });
     defer dir.close();
 
@@ -48,10 +49,11 @@ pub fn printDirContents(path: []const u8, needle: []const u8) !void {
             // std.debug.print("{s}/{s}\n", .{ path, dirContent.name });
             var buf: [1024]u8 = undefined;
             const newPath = try std.fmt.bufPrint(&buf, "{s}/{s}", .{ path, dirContent.name });
-            try printDirContents(newPath, needle);
+            try printDirContents(newPath, needle, stdout);
         } else if (dirContent.kind == std.fs.File.Kind.file) {
             if (std.mem.eql(u8, dirContent.name, needle)) {
-                std.debug.print("{s}/{s}\n", .{ path, dirContent.name });
+                // std.debug.print("{s}/{s}\n", .{ path, dirContent.name });
+                try stdout.print("{s}/{s}\n", .{ path, dirContent.name });
             }
         }
     }
