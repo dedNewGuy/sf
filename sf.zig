@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn main() !void {
     const alloc: std.mem.Allocator = init: {
@@ -17,7 +18,7 @@ pub fn main() !void {
         },
         3 => {
             var buf: [1024]u8 = undefined;
-            const inputPath = try std.fmt.bufPrint(&buf, "{s}/{s}", .{ path, args[1] });
+            const inputPath = try std.fmt.bufPrint(&buf, "{s}", .{args[1]});
             const trimedPath = std.mem.trimEnd(u8, inputPath, "/");
             path = trimedPath;
             filename = args[2];
@@ -27,6 +28,8 @@ pub fn main() !void {
             std.process.exit(1);
         },
     }
+
+    // std.debug.print("PATH GIVEN: {s}\n", .{path});
 
     const stdout = std.io.getStdOut().writer();
     printDirContents(path, filename, stdout) catch |err| switch (err) {
@@ -48,12 +51,14 @@ pub fn printDirContents(path: []const u8, needle: []const u8, stdout: std.fs.Fil
         if (dirContent.kind == std.fs.File.Kind.directory) {
             // std.debug.print("{s}/{s}\n", .{ path, dirContent.name });
             var buf: [1024]u8 = undefined;
-            const newPath = try std.fmt.bufPrint(&buf, "{s}/{s}", .{ path, dirContent.name });
+            const format: []const u8 = if (builtin.target.os.tag == .windows) "{s}\\{s}" else "{s}/{s}";
+            const newPath = try std.fmt.bufPrint(&buf, format, .{ path, dirContent.name });
             try printDirContents(newPath, needle, stdout);
-        } else if (dirContent.kind == std.fs.File.Kind.file) {
+        } else {
             if (std.mem.eql(u8, dirContent.name, needle)) {
                 // std.debug.print("{s}/{s}\n", .{ path, dirContent.name });
-                try stdout.print("{s}/{s}\n", .{ path, dirContent.name });
+                const format: []const u8 = if (builtin.target.os.tag == .windows) "{s}\\{s}\n" else "{s}/{s}\n";
+                try stdout.print(format, .{ path, dirContent.name });
             }
         }
     }
