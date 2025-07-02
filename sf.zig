@@ -17,12 +17,13 @@ pub fn main() !void {
         },
         3 => {
             var buf: [1024]u8 = undefined;
-            const foo = try std.fmt.bufPrint(&buf, "{s}/{s}", .{ path, args[1] });
-            path = foo;
+            const inputPath = try std.fmt.bufPrint(&buf, "{s}/{s}", .{ path, args[1] });
+            const trimedPath = std.mem.trimEnd(u8, inputPath, "/");
+            path = trimedPath;
             filename = args[2];
         },
         else => {
-            std.debug.print("Usage: sf [dir] [filename]", .{});
+            std.debug.print("Usage: sf [dir] [filename]\n", .{});
             std.process.exit(1);
         },
     }
