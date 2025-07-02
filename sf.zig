@@ -23,7 +23,7 @@ pub fn main() !void {
             filename = args[2];
         },
         else => {
-            std.debug.print("Usage: sf [dir] [filename]\n", .{});
+            std.debug.print("Usage: sf [dir] <filename>\n", .{});
             std.process.exit(1);
         },
     }
