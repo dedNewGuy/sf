@@ -11,7 +11,7 @@ could also download the binary executable.
 
 ## Build
 **Requirements**:
-- [zig](https://ziglang.org/download/)
+- [zig 0.14.1](https://ziglang.org/download/)
 
 Run
 ```
