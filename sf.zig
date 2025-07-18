@@ -19,7 +19,7 @@ pub fn main() !void {
         3 => {
             var buf: [1024]u8 = undefined;
             const inputPath = try std.fmt.bufPrint(&buf, "{s}", .{args[1]});
-            const trimedPath = std.mem.trimEnd(u8, inputPath, "/");
+            const trimedPath = std.mem.trimRight(u8, inputPath, "/");
             path = trimedPath;
             filename = args[2];
         },
